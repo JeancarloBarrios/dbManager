@@ -96,11 +96,11 @@ public class DBMS{
   }
 
   public void executeQuery(String s){
-    SQLLexer lexer = new SQLLexer(new ANTLRInputStream(s));
+    JDSQLLexer lexer = new JDSQLLexer(new ANTLRInputStream(s));
     lexer.removeErrorListeners();
 
     TokenStream tokenStream = new CommonTokenStream(lexer);
-    SQLParser parser = new SQLParser(tokenStream);
+    JDSQLParser parser = new JDSQLParser(tokenStream);
     parser.removeErrorListeners();
 
     ParseTree tree = parser.query();
