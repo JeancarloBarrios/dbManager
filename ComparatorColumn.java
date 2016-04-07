@@ -147,11 +147,11 @@ public class ComparatorColumn {
         Tuple pivot = toSort.get(pivotIndex);
         while(IndexLow <= IndexHigh){
 
-            while(getNewOrder(typeToSort, toSort.get(IndexLow), pivot,indexColumn,"ASC") > 0){
+            while(getNewOrder(typeToSort, toSort.get(IndexLow), pivot, indexColumn,"ASC") > 0){
                 IndexLow++;
             }
 
-            while(getNewOrder(typeToSort, pivot, toSort.get(IndexHigh),indexColumn,"ASC")>0){
+            while(getNewOrder(typeToSort, pivot, toSort.get(IndexHigh), indexColumn,"ASC")>0){
                 IndexHigh--;
             }
             if(IndexLow<= IndexHigh){
@@ -163,10 +163,10 @@ public class ComparatorColumn {
             }
         }
         if(i < IndexHigh){
-            quickSortTuple(toSort,i,IndexHigh);
+            quickSortTuple(toSort, i, IndexHigh);
         }
         if(j > IndexLow){
-            quickSortTuple(toSort,IndexLow,j);
+            quickSortTuple(toSort, IndexLow,j);
         }
     }
 

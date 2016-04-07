@@ -15,10 +15,10 @@ import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTree;
-import proyecto1basesdatos.SQLParser.OrderTermContext;
+// import JDSQLParser.OrderTermContext;
 
 
-public class Loader extends SQLBaseVisitor<Object>{
+public class Loader extends JDSQLBaseVisitor<Object>{
 
         DBMS  dbms;
         ArrayList<Column> colsCreate; // Almacena las columns que se crean en CREATE TABLE para poder verificarlas en los metodos de constraints
@@ -225,7 +225,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
         // ALL the override methos from the vistor class
 	@Override
-	public Object visitExpression(SQLParser.ExpressionContext ctx) {
+	public Object visitExpression(JDSQLParser.ExpressionContext ctx) {
             if(ctx.children.size()==1){
                 return visit(ctx.andexpr());
 
@@ -248,7 +248,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitAlterDbStmt(SQLParser.AlterDbStmtContext ctx) {
+	public Object visitAlterDbStmt(JDSQLParser.AlterDbStmtContext ctx) {
 
             boolean result = DB.renameDB(ctx.dbName().getText(), ctx.newDbName().getText());
             if(result){
@@ -263,7 +263,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitDropDbStmt(SQLParser.DropDbStmtContext ctx) {
+	public Object visitDropDbStmt(JDSQLParser.DropDbStmtContext ctx) {
 
 		String name = ctx.ID().getText();
                 boolean fueDestruida = DB.destroyDb(name);
@@ -286,7 +286,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 	}
 	@Override
-	public Object visitCreateDbStmt(SQLParser.CreateDbStmtContext ctx) {
+	public Object visitCreateDbStmt(JDSQLParser.CreateDbStmtContext ctx) {
                 //Tomamos el name
                 String name = ctx.ID().getText();
                 //Intentamos crear la base de datos, si ya existe capturamos la excepcion y mostramos error
@@ -307,7 +307,7 @@ public class Loader extends SQLBaseVisitor<Object>{
                 return name;
 	}
 	@Override
-	public Object visitCreateTableStmt(SQLParser.CreateTableStmtContext ctx) {
+	public Object visitCreateTableStmt(JDSQLParser.CreateTableStmtContext ctx) {
             this.availableCols = new ArrayList<Column>();
             this.availableCons = new ArrayList<Constraint>();
             Table t1= new Table(); //Utilizamos el constructor vacio para dejar inicializada la variable
@@ -403,7 +403,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitColConstraint(SQLParser.ColConstraintContext ctx) {
+	public Object visitColConstraint(JDSQLParser.ColConstraintContext ctx) {
 
             //Revisamos el type de constraint
             if(ctx.PRIMARY()!=null){ //Si es Primary key
@@ -684,7 +684,7 @@ public class Loader extends SQLBaseVisitor<Object>{
             return "ERROR";
 	}
 	@Override
-	public Object visitColumnDecl(SQLParser.ColumnDeclContext ctx) {
+	public Object visitColumnDecl(JDSQLParser.ColumnDeclContext ctx) {
             //Creamos la columan dependiendo del type
             String name = ctx.colName().getText();
             int colType = 0;
@@ -713,13 +713,13 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitDmlQuery(SQLParser.DmlQueryContext ctx) {
+	public Object visitDmlQuery(JDSQLParser.DmlQueryContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitDmlQuery(ctx);
 	}
 
 	@Override
-	public Object visitShowTableStmt(SQLParser.ShowTableStmtContext ctx) {
+	public Object visitShowTableStmt(JDSQLParser.ShowTableStmtContext ctx) {
             if(DBMS.currentDB==null){
                 Frame.jTextArea2.setText("ERROR: No existe nin`guna base de datos en uso. Utilice USE DATABASE <name> para utilizar una base de datos existente.");
                 return "ERROR";
@@ -751,7 +751,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitShowColumnsStmt(SQLParser.ShowColumnsStmtContext ctx) {
+	public Object visitShowColumnsStmt(JDSQLParser.ShowColumnsStmtContext ctx) {
             String nameTable = ctx.ID().getText();
             //Se carga la metadata de la table que se desea mostrar
             DBMetaData d = DBMS.metaData.getDB(DBMS.currentDB);
@@ -801,13 +801,13 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitRel_op(SQLParser.Rel_opContext ctx) {
+	public Object visitRel_op(JDSQLParser.Rel_opContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitRel_op(ctx);
 	}
 
 	@Override
-	public Object visitRenameAlter(SQLParser.RenameAlterContext ctx) {
+	public Object visitRenameAlter(JDSQLParser.RenameAlterContext ctx) {
             //Verificamos si hay una DB en uso
 
             Debug.add("Buscando la base de datos en uso");
@@ -852,7 +852,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 	}
 	@Override
-	public Object visitAccionAlter(SQLParser.AccionAlterContext ctx) {
+	public Object visitAccionAlter(JDSQLParser.AccionAlterContext ctx) {
 
                 Debug.add("Buscando la base de datos en uso");
 
@@ -897,7 +897,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
  	@Override
-	public Object visitAccion(SQLParser.AccionContext ctx) {
+	public Object visitAccion(JDSQLParser.AccionContext ctx) {
 
 //Si es add Column
             this.availableCons = tableCreate.constraints;
@@ -1117,7 +1117,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
         @Override
-        public Object visitSingleColConstraint(@NotNull SQLParser.SingleColConstraintContext ctx) {
+        public Object visitSingleColConstraint(@NotNull JDSQLParser.SingleColConstraintContext ctx) {
             //Si es primary key
 
             Debug.add("Agregando restriccion de column...");
@@ -1341,19 +1341,19 @@ public class Loader extends SQLBaseVisitor<Object>{
         }
 
 	@Override
-	public Object visitFkNombre(SQLParser.FkNombreContext ctx) {
+	public Object visitFkNombre(JDSQLParser.FkNombreContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitFkNombre(ctx);
 	}
 
 	@Override
-	public Object visitDbName(SQLParser.DbNameContext ctx) {
+	public Object visitDbName(JDSQLParser.DbNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitDbName(ctx);
 	}
 
 	@Override
-	public Object visitPrimary(SQLParser.PrimaryContext ctx) {
+	public Object visitPrimary(JDSQLParser.PrimaryContext ctx) {
             if(ctx.children.size()==1){
                 return visit(ctx.compareExpr());
 
@@ -1362,7 +1362,7 @@ public class Loader extends SQLBaseVisitor<Object>{
                 return visit(ctx.expression());
             }
 	}
-       @Override public Object visitMultiInsert(@NotNull SQLParser.MultiInsertContext ctx) {
+       @Override public Object visitMultiInsert(@NotNull JDSQLParser.MultiInsertContext ctx) {
            this.tablesInsert = new ArrayList<Table>();
            this.regsInsert = new ArrayList<Integer>();
             if(DBMS.currentDB==null){
@@ -1450,7 +1450,7 @@ public class Loader extends SQLBaseVisitor<Object>{
            return null;
        }
 	@Override
-	public Object visitInsertStmt(SQLParser.InsertStmtContext ctx) {
+	public Object visitInsertStmt(JDSQLParser.InsertStmtContext ctx) {
                  ArrayList<Object> values = new ArrayList<Object>();
                  ArrayList<Integer> tipos = new ArrayList<Integer>();
                 //Cargamos la table donde se insertara la tuple
@@ -1880,7 +1880,7 @@ public class Loader extends SQLBaseVisitor<Object>{
                 return true;
 	}
 	@Override
-	public Object visitVal(SQLParser.ValContext ctx) {
+	public Object visitVal(JDSQLParser.ValContext ctx) {
 		if(ctx.CHAR_VAL()!=null){
                     return Column.CHAR_TYPE;
 
@@ -1904,7 +1904,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitUpdateStmt(SQLParser.UpdateStmtContext ctx) {
+	public Object visitUpdateStmt(JDSQLParser.UpdateStmtContext ctx) {
             if(DBMS.currentDB==null){
                 Debug.add("ERROR: No existe ninguna base de datos en uso. Utilice USE DATABASE <name> para utilizar una base de datos existente.");
                 if(!Frame.activateVerbose){
@@ -2300,7 +2300,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 	}
         @Override
-        public Object visitDeleteStmt(SQLParser.DeleteStmtContext ctx){
+        public Object visitDeleteStmt(JDSQLParser.DeleteStmtContext ctx){
             if(DBMS.currentDB==null){
                 Frame.jTextArea2.setText("ERROR: No existe ninguna base de datos en uso. Utilice USE DATABASE <name> para utilizar una base de datos existente.");
                 return "ERROR";
@@ -2385,7 +2385,7 @@ public class Loader extends SQLBaseVisitor<Object>{
             return super. visitDeleteStmt(ctx);
         }
 	@Override
-	public Object visitShowDbStmt(SQLParser.ShowDbStmtContext ctx) {
+	public Object visitShowDbStmt(JDSQLParser.ShowDbStmtContext ctx) {
             //1. Especificar el directorio donde se debe ir a buscar el archivo de metadata
             String currentDir = System.getProperty("user.dir");
             System.out.println(currentDir);
@@ -2443,7 +2443,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitDropTableStmt(SQLParser.DropTableStmtContext ctx) {
+	public Object visitDropTableStmt(JDSQLParser.DropTableStmtContext ctx) {
             if(DBMS.currentDB==null){
                 Frame.jTextArea2.setText("ERROR: No existe ninguna base de datos en uso. Utilice USE DATABASE <name> para utilizar una base de datos existente.");
                 return "ERROR";
@@ -2507,7 +2507,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitAndexpr(SQLParser.AndexprContext ctx) {
+	public Object visitAndexpr(JDSQLParser.AndexprContext ctx) {
             if(ctx.children.size()==1){
                 return visit(ctx.factor());
 
@@ -2528,37 +2528,37 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitValueList(SQLParser.ValueListContext ctx) {
+	public Object visitValueList(JDSQLParser.ValueListContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitValueList(ctx);
 	}
 
 	@Override
-	public Object visitNewName(SQLParser.NewNameContext ctx) {
+	public Object visitNewName(JDSQLParser.NewNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitNewName(ctx);
 	}
 
 	@Override
-	public Object visitTable(SQLParser.TableContext ctx) {
+	public Object visitTable(JDSQLParser.TableContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitTable(ctx);
 	}
 
 	@Override
-	public Object visitAlterName(SQLParser.AlterNameContext ctx) {
+	public Object visitAlterName(JDSQLParser.AlterNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitAlterName(ctx);
 	}
 
 	@Override
-	public Object visitColumnList(SQLParser.ColumnListContext ctx) {
+	public Object visitColumnList(JDSQLParser.ColumnListContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitColumnList(ctx);
 	}
 
 	@Override
-	public Object visitUseDbStmt(SQLParser.UseDbStmtContext ctx) {
+	public Object visitUseDbStmt(JDSQLParser.UseDbStmtContext ctx) {
             //1. Especificar el directorio donde se debe ir a buscar el archivo de metadata
             Debug.add("Bucando Directorio de Base de Datos...");
             String currentDir = System.getProperty("user.dir");
@@ -2623,7 +2623,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitColumn(SQLParser.ColumnContext ctx) {
+	public Object visitColumn(JDSQLParser.ColumnContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitColumn(ctx);
 	}
@@ -2631,38 +2631,38 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitDdlQuery(SQLParser.DdlQueryContext ctx) {
+	public Object visitDdlQuery(JDSQLParser.DdlQueryContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitDdlQuery(ctx);
 	}
 
 	@Override
-	public Object visitQuery(SQLParser.QueryContext ctx) {
+	public Object visitQuery(JDSQLParser.QueryContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitQuery(ctx);
 	}
 
 	@Override
-	public Object visitOrderTerm(SQLParser.OrderTermContext ctx) {
+	public Object visitOrderTerm(JDSQLParser.OrderTermContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitOrderTerm(ctx);
 	}
 
 
 	@Override
-	public Object visitSelectList(SQLParser.SelectListContext ctx) {
+	public Object visitSelectList(JDSQLParser.SelectListContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitSelectList(ctx);
 	}
 
 	@Override
-	public Object visitChNombre(SQLParser.ChNombreContext ctx) {
+	public Object visitChNombre(JDSQLParser.ChNombreContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitChNombre(ctx);
 	}
 
 	@Override
-	public Object visitCompareExpr(SQLParser.CompareExprContext ctx) {
+	public Object visitCompareExpr(JDSQLParser.CompareExprContext ctx) {
             String op = ctx.rel_op().getText();
             if(!op.equals("=")&&!op.equals("<>")&&!op.equals(">")&&!op.equals("<")&&!op.equals(">=")&&!op.equals("<=")){
                 Frame.jTextArea2.setText("Error, operando invalido en expresion: "+op);
@@ -2725,31 +2725,31 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitOrderExpr(SQLParser.OrderExprContext ctx) {
+	public Object visitOrderExpr(JDSQLParser.OrderExprContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitOrderExpr(ctx);
 	}
 
 	@Override
-	public Object visitTableName(SQLParser.TableNameContext ctx) {
+	public Object visitTableName(JDSQLParser.TableNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitTableName(ctx);
 	}
 
 	@Override
-	public Object visitColumnName(SQLParser.ColumnNameContext ctx) {
+	public Object visitColumnName(JDSQLParser.ColumnNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitColumnName(ctx);
 	}
 
 	@Override
-	public Object visitIdTabla(SQLParser.IdTablaContext ctx) {
+	public Object visitIdTabla(JDSQLParser.IdTablaContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitIdTabla(ctx);
 	}
 
 	@Override
-	public Object visitPkNombre(SQLParser.PkNombreContext ctx) {
+	public Object visitPkNombre(JDSQLParser.PkNombreContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitPkNombre(ctx);
 	}
@@ -2757,7 +2757,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitSelectStmt(SQLParser.SelectStmtContext ctx) {
+	public Object visitSelectStmt(JDSQLParser.SelectStmtContext ctx) {
              if(DBMS.currentDB==null){
                 Frame.jTextArea2.setText("ERROR: No existe ninguna base de datos en uso. Utilice USE DATABASE <name> para utilizar una base de datos existente.");
                 return "ERROR";
@@ -2914,7 +2914,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitFactor(SQLParser.FactorContext ctx) {
+	public Object visitFactor(JDSQLParser.FactorContext ctx) {
 
             if(ctx.children.size()== 1){
                 return visit(ctx.primary());
@@ -2937,13 +2937,13 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitColumnsUpdate(SQLParser.ColumnsUpdateContext ctx) {
+	public Object visitColumnsUpdate(JDSQLParser.ColumnsUpdateContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitColumnsUpdate(ctx);
 	}
 
 	@Override
-	public Object visitTerm(SQLParser.TermContext ctx) {
+	public Object visitTerm(JDSQLParser.TermContext ctx) {
             //Si es un int
             if(ctx.NUM()!=null){
                 int a = Integer.parseInt(ctx.NUM().getText());
@@ -2994,7 +2994,7 @@ public class Loader extends SQLBaseVisitor<Object>{
 	}
 
 	@Override
-	public Object visitTipo(SQLParser.TipoContext ctx) {
+	public Object visitTipo(JDSQLParser.TipoContext ctx) {
 		// TODO Auto-generated method stub
 		if(ctx.CHAR()!= null){
                     return Column.CHAR_TYPE;
@@ -3017,13 +3017,13 @@ public class Loader extends SQLBaseVisitor<Object>{
 
 
 	@Override
-	public Object visitNewDbName(SQLParser.NewDbNameContext ctx) {
+	public Object visitNewDbName(JDSQLParser.NewDbNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitNewDbName(ctx);
 	}
 
 	@Override
-	public Object visitColName(SQLParser.ColNameContext ctx) {
+	public Object visitColName(JDSQLParser.ColNameContext ctx) {
 		// TODO Auto-generated method stub
 		return super.visitColName(ctx);
 	}
